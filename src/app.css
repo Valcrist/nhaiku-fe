@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #05101F, #071629);
+    background-attachment: fixed;
+    font-size: 15px;
+}
