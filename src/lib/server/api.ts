@@ -1,4 +1,4 @@
-import type { GalleryPage } from '$lib/types'
+import type { GalleryPage, MangaDetail } from '$lib/types'
 
 export async function localSearchManga(
     apiUrl: string,
@@ -14,6 +14,18 @@ export async function localSearchManga(
         body: JSON.stringify({ page })
     })
     if (!res.ok) throw new Error(`local manga search failed: ${res.status}`)
+    return res.json()
+}
+
+export async function getManga(
+    apiUrl: string,
+    apiKey: string,
+    mangaId: number
+): Promise<MangaDetail> {
+    const res = await fetch(`${apiUrl}/manga/${mangaId}`, {
+        headers: { 'X-API-Key': apiKey }
+    })
+    if (!res.ok) throw new Error(`manga fetch failed: ${res.status}`)
     return res.json()
 }
 

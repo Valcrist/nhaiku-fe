@@ -1,7 +1,7 @@
 <h1 align="center">NHaiku FE 🌸</h1>
 
 <p align="center">
-  <strong>Frontend for NHaiku</strong>
+  <strong>Self-hosted manga gallery frontend</strong>
 </p>
 
 <p align="center">
@@ -21,5 +21,99 @@
 
 ## Overview
 
-Frontend for NHaiku. Work in progress.
+NHaiku FE is the frontend for [NHaiku](https://github.com/Valcrist/nhaiku). It provides a self-hosted interface for browsing locally cached manga and remote sources, with de-duplication and offline-first design.
 
+**Features:**
+
+- Browse and search your local manga library with pagination
+- Browse remote sources and trigger downloads
+- Full manga viewer with cover, pages, tags, and metadata
+- Voting and re-indexing support
+- Lazy-loaded images with thumbnail caching
+- Dark, responsive UI
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | SvelteKit 2 + Svelte 5 |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4 |
+| Build | Vite 6 |
+| Adapter | Auto (universal deployment) |
+| Package manager | pnpm |
+
+---
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) 18+
+- [pnpm](https://pnpm.io/) (`npm install -g pnpm`)
+- A running [NHaiku backend](https://github.com/Valcrist/nhaiku) instance
+
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/Valcrist/nhaiku-fe.git
+cd nhaiku-fe
+pnpm install
+```
+
+---
+
+## Environment Variables
+
+
+| Variable | Description |
+|---|---|
+| `API_URL` | NHaiku backend URL (e.g. `http://192.168.1.100:8069`) |
+
+---
+
+## Development
+
+```bash
+pnpm dev
+```
+
+The app runs at `http://localhost:5173` by default.
+
+---
+
+## Building for Production
+
+```bash
+pnpm build
+pnpm preview   # preview the production build locally
+```
+
+---
+
+## Project Structure
+
+```
+src/
+├── routes/
+│   ├── +page.server.ts       # Redirects / → /page/1
+│   ├── page/[page]/          # Local gallery (paginated)
+│   ├── r/page/[page]/        # Remote gallery (paginated)
+│   └── g/[id]/               # Manga detail viewer
+├── lib/
+│   ├── components/           # Shared UI components
+│   ├── server/
+│   │   ├── api.ts            # Backend API client
+│   │   └── thumbCache.ts     # Thumbnail caching
+│   └── types.ts              # Shared TypeScript types
+└── app.css                   # Global styles (Tailwind)
+```
+
+---
+
+## License
+
+[PolyForm Noncommercial](LICENSE)
