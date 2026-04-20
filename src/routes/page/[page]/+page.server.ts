@@ -1,19 +1,15 @@
 import { API_KEY, API_URL } from '$env/static/private'
-import { remoteSearchManga } from '$lib/server/api'
-import { getThumbServers } from '$lib/server/thumbCache'
+import { localSearchManga } from '$lib/server/api'
 import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params }) => {
     const page = Math.max(1, Number(params.page) || 1)
 
-    const [servers, gallery] = await Promise.all([
-        getThumbServers(API_URL),
-        remoteSearchManga(API_URL, API_KEY, page)
-    ])
+    const gallery = await localSearchManga(API_URL, API_KEY, page)
 
-    const items = gallery.result.map((item, i) => ({
+    const items = gallery.result.map((item) => ({
         ...item,
-        thumbUrl: `${servers[i % servers.length]}/${item.thumbnail}`
+        thumbUrl: `${API_URL}/thumb/${item.thumbnail}`
     }))
 
     return {
