@@ -10,9 +10,11 @@
     FilterX,
     Globe,
     RefreshCw,
+    RotateCcw,
     ThumbsDown,
     ThumbsUp,
     Trash2,
+    X,
   } from 'lucide-svelte';
   import type { PageData } from './$types';
 
@@ -46,6 +48,8 @@
   let currentVotes = $state(untrack(() => data.manga.votes));
   let showNukeModal = $state(false);
   let selectedTags = $state(new Set<string>());
+  let titleEditing = $state(false);
+  let titleQuery = $state('');
   let localSort = $state<'title' | 'date' | 'pages' | 'votes' | null>(null);
   let remoteSort = $state<'date' | 'popular' | 'popular-today' | 'popular-week' | 'popular-month' | null>(null);
 
@@ -60,8 +64,25 @@
     return selectedTags.has(`${tag.type}:"${tag.slug}"`);
   }
 
+  function startTitleEdit() {
+    titleQuery = manga.title;
+    titleEditing = true;
+  }
+
+  function commitTitleEdit() {
+    titleEditing = false;
+  }
+
+  function cancelTitleEdit() {
+    titleQuery = '';
+    titleEditing = false;
+  }
+
   function buildQueryString() {
-    return [...selectedTags].join(' ');
+    const parts = [...selectedTags];
+    const t = titleQuery.trim();
+    if (t) parts.push(t.includes(' ') ? `"${t}"` : t);
+    return parts.join(' ');
   }
 
   function getLocalUrl() {
@@ -158,7 +179,23 @@
 
   <main class="mx-auto max-w-5xl px-4 py-6">
     <div class="rounded-lg bg-[#1c1f2e] p-6">
-      <h1 class="text-xl leading-snug font-semibold text-white">{manga.title}</h1>
+      {#if titleEditing}
+        <div class="flex items-center gap-2">
+          <input
+            class="text-xl leading-snug font-semibold text-white bg-transparent border-b border-zinc-500 outline-none flex-1 min-w-0"
+            bind:value={titleQuery}
+            onkeydown={(e) => { if (e.key === 'Enter') commitTitleEdit(); else if (e.key === 'Escape') cancelTitleEdit() }}
+            use:focusOnMount
+          />
+          <button class="icon-btn shrink-0 ml-2" onclick={() => (titleQuery = manga.title)} title="Reset"><RotateCcw size={14} /></button>
+          <button class="icon-btn shrink-0" onclick={cancelTitleEdit} title="Cancel"><X size={14} /></button>
+        </div>
+      {:else}
+        <button
+          class="text-xl leading-snug font-semibold text-white cursor-pointer hover:text-zinc-300 text-left w-full bg-transparent border-none p-0"
+          onclick={startTitleEdit}
+        >{manga.title}</button>
+      {/if}
       {#if manga.title_jp}
         <p class="mt-1 text-sm text-zinc-500">{manga.title_jp}</p>
       {/if}
