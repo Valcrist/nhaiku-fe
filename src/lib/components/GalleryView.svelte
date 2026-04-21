@@ -50,6 +50,7 @@
         <a
           href="/g/{item.id}?from={galleryId}"
           class="group block"
+          data-sveltekit-preload-data="tap"
           onclick={(e) => handleCardClick(e, item.id)}
         >
           <div class="relative overflow-hidden rounded">
