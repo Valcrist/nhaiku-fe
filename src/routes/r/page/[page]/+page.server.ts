@@ -3,12 +3,15 @@ import { remoteSearchManga } from '$lib/server/api';
 import { getThumbServers } from '$lib/server/thumbCache';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, url }) => {
   const page = Math.max(1, Number(params.page) || 1);
+  const rawQ = url.searchParams.get('q') ?? '';
+  const query = rawQ ? rawQ.split(' ') : [];
+  const sort = url.searchParams.get('sort') ?? 'date';
 
   const [servers, gallery] = await Promise.all([
     getThumbServers(API_URL),
-    remoteSearchManga(API_URL, API_KEY, page),
+    remoteSearchManga(API_URL, API_KEY, page, query, sort),
   ]);
 
   const items = gallery.result.map((item) => ({

@@ -1,13 +1,26 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import { untrack } from 'svelte';
   import ScrollToTop from '$lib/components/ScrollToTop.svelte';
+  import type { Tag } from '$lib/types';
+  import {
+    ChevronsDown,
+    Database,
+    FilterX,
+    Globe,
+    RefreshCw,
+    ThumbsDown,
+    ThumbsUp,
+    Trash2,
+  } from 'lucide-svelte';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
   const manga = $derived(data.manga);
 
-  const TAG_TYPE_ORDER = ['tag', 'artist', 'language', 'category'];
+  const TAG_TYPE_ORDER = ['artist', 'group', 'tag'];
 
   const tagGroups = $derived.by(() => {
     const groups = new Map<string, typeof manga.tags>();
@@ -29,6 +42,103 @@
     const word = s.charAt(0).toUpperCase() + s.slice(1);
     return word.endsWith('y') ? word.slice(0, -1) + 'ies' : word + 's';
   }
+
+  let currentVotes = $state(untrack(() => data.manga.votes));
+  let showNukeModal = $state(false);
+  let selectedTags = $state(new Set<string>());
+  let localSort = $state<'title' | 'date' | 'pages' | 'votes' | null>(null);
+  let remoteSort = $state<'date' | 'popular' | 'popular-today' | 'popular-week' | 'popular-month' | null>(null);
+
+  function toggleTag(tag: Tag) {
+    const key = `${tag.type}:"${tag.slug}"`;
+    const next = new Set(selectedTags);
+    next.has(key) ? next.delete(key) : next.add(key);
+    selectedTags = next;
+  }
+
+  function isTagSelected(tag: Tag) {
+    return selectedTags.has(`${tag.type}:"${tag.slug}"`);
+  }
+
+  function buildQueryString() {
+    return [...selectedTags].join(' ');
+  }
+
+  function getLocalUrl() {
+    const params = new URLSearchParams();
+    if (localSort) params.set('sort', localSort);
+    const q = buildQueryString();
+    if (q) params.set('q', q);
+    return `/page/1?${params}`;
+  }
+
+  function getRemoteUrl() {
+    const params = new URLSearchParams();
+    if (remoteSort) params.set('sort', remoteSort);
+    const q = buildQueryString();
+    if (q) params.set('q', q);
+    return `/r/page/1?${params}`;
+  }
+
+  let suppressNextClick = false;
+  let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function startLongPress(getUrl: () => string) {
+    longPressTimer = setTimeout(() => {
+      suppressNextClick = true;
+      window.open(getUrl(), '_blank');
+    }, 1000);
+  }
+
+  function cancelLongPress() {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  }
+
+  function searchLocal(e: MouseEvent) {
+    if (suppressNextClick) { suppressNextClick = false; return; }
+    const url = getLocalUrl();
+    if (e.ctrlKey || e.metaKey) window.open(url, '_blank');
+    else goto(url);
+  }
+
+  function searchRemote(e: MouseEvent) {
+    if (suppressNextClick) { suppressNextClick = false; return; }
+    const url = getRemoteUrl();
+    if (e.ctrlKey || e.metaKey) window.open(url, '_blank');
+    else goto(url);
+  }
+
+  async function vote(direction: 'up' | 'down') {
+    const res = await fetch(`/api/vote/${direction}/${manga.id}`);
+    if (res.ok) {
+      const result = await res.json();
+      const val = Object.values(result)[0];
+      if (typeof val === 'number') currentVotes = val;
+    }
+  }
+
+  function scrollToBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+
+  const backHref = $derived(
+    page.url.searchParams.get('from') === 'remote' ? '/r/page/1' : '/page/1'
+  );
+
+  async function confirmNuke() {
+    await fetch(`/api/nuke/${manga.id}`);
+    goto(backHref);
+  }
+
+  function focusOnMount(node: HTMLElement) {
+    node.focus();
+  }
+
+  const LOCAL_SORTS = ['title', 'date', 'pages', 'votes'] as const;
+  const REMOTE_SORTS = ['date', 'popular', 'popular-today', 'popular-week', 'popular-month'] as const;
 </script>
 
 <svelte:head><title>{manga.title} - NHaiku</title></svelte:head>
@@ -47,65 +157,103 @@
   </header>
 
   <main class="mx-auto max-w-5xl px-4 py-6">
-    <div class="flex gap-6 rounded-lg bg-[#1c1f2e] p-6">
-      <div class="shrink-0">
-        <button
-          onclick={() => location.reload()}
-          class="block cursor-pointer border-0 bg-transparent p-0"
-        >
-          {#if manga.coverUrl}
-            <img
-              src={manga.coverUrl}
-              alt={manga.title}
-              class="w-48 rounded object-cover"
-            />
-          {:else}
-            <div
-              class="flex h-72 w-48 items-center justify-center rounded bg-zinc-800 text-sm text-zinc-600"
-            >
-              No cover
+    <div class="rounded-lg bg-[#1c1f2e] p-6">
+      <h1 class="text-xl leading-snug font-semibold text-white">{manga.title}</h1>
+      {#if manga.title_jp}
+        <p class="mt-1 text-sm text-zinc-500">{manga.title_jp}</p>
+      {/if}
+
+      <div class="mt-4 space-y-2 text-sm">
+        {#each tagGroups as [type, tags]}
+          <div class="flex items-start gap-2">
+            <span class="w-24 shrink-0 pt-0.5 text-zinc-400">{capitalize(type)}:</span>
+            <div class="flex flex-1 flex-wrap gap-1.5">
+              {#each tags as tag (tag.id)}
+                <button
+                  onclick={() => toggleTag(tag)}
+                  class="tag-pill"
+                  class:active={isTagSelected(tag)}
+                >{tag.slug}</button>
+              {/each}
             </div>
-          {/if}
-        </button>
+          </div>
+        {/each}
+
+        <div class="flex items-start gap-2">
+          <span class="w-24 shrink-0 pt-0.5 text-zinc-400">Pages:</span>
+          <span class="text-zinc-200">{manga.pages}</span>
+        </div>
+
+        <div class="flex items-start gap-2">
+          <span class="w-24 shrink-0 pt-0.5 text-zinc-400">Votes:</span>
+          <span class="text-zinc-200">{currentVotes}</span>
+        </div>
       </div>
 
-      <div class="min-w-0 flex-1">
-        <h1 class="text-xl leading-snug font-semibold text-white">{manga.title}</h1>
-        <p class="mt-1 text-sm text-zinc-500">#{manga.media_id}</p>
+      <hr class="my-4 border-zinc-700" />
 
-        <div class="mt-4 space-y-2 text-sm">
-          {#each tagGroups as [type, tags]}
-            <div class="flex items-start gap-2">
-              <span class="w-24 shrink-0 pt-0.5 text-zinc-400">{capitalize(type)}:</span
-              >
-              <div class="flex flex-1 flex-wrap gap-1.5">
-                {#each tags as tag (tag.id)}
-                  <span class="rounded bg-zinc-700 px-2 py-0.5 text-xs text-zinc-200"
-                    >{tag.slug}</span
-                  >
-                {/each}
-              </div>
-            </div>
-          {/each}
-
-          <div class="flex items-start gap-2">
-            <span class="w-24 shrink-0 pt-0.5 text-zinc-400">Pages:</span>
-            <span class="text-zinc-200">{manga.pages}</span>
+      <div class="space-y-2 text-sm">
+        <div class="flex items-center gap-2">
+          <span class="w-24 shrink-0 text-zinc-400">Local Sort:</span>
+          <div class="flex flex-wrap gap-1.5">
+            {#each LOCAL_SORTS as s}
+              <button
+                onclick={() => (localSort = localSort === s ? null : s)}
+                class="tag-pill"
+                class:active={localSort === s}
+              >{s}</button>
+            {/each}
           </div>
         </div>
 
-        <div class="mt-6 flex gap-3">
-          <button
-            class="flex cursor-pointer items-center gap-1.5 rounded bg-rose-700 px-4 py-1.5 text-sm text-white transition-colors hover:bg-rose-600"
-          >
-            ♥ Votes ({manga.votes})
-          </button>
-          <button
-            class="flex cursor-pointer items-center gap-1.5 rounded bg-zinc-700 px-4 py-1.5 text-sm text-white transition-colors hover:bg-zinc-600"
-          >
-            ⬇ Re-index
-          </button>
+        <div class="flex items-center gap-2">
+          <span class="w-24 shrink-0 text-zinc-400">Remote Sort:</span>
+          <div class="flex flex-wrap gap-1.5">
+            {#each REMOTE_SORTS as s}
+              <button
+                onclick={() => (remoteSort = remoteSort === s ? null : s)}
+                class="tag-pill"
+                class:active={remoteSort === s}
+              >{s}</button>
+            {/each}
+          </div>
         </div>
+      </div>
+
+      <div class="mt-4 flex items-center justify-end gap-2">
+        <button onclick={() => (showNukeModal = true)} class="icon-btn"><Trash2 size={16} /></button>
+
+        <span class="divider">|</span>
+
+        <button onclick={() => vote('up')} class="icon-btn"><ThumbsUp size={16} /></button>
+        <button onclick={() => vote('down')} class="icon-btn"><ThumbsDown size={16} /></button>
+
+        <span class="divider">|</span>
+
+        <button class="icon-btn"><RefreshCw size={16} /></button>
+
+        <span class="divider">|</span>
+
+        <button onclick={() => (selectedTags = new Set())} class="icon-btn"><FilterX size={16} /></button>
+        <button
+          onclick={searchLocal}
+          ontouchstart={() => startLongPress(getLocalUrl)}
+          ontouchend={cancelLongPress}
+          ontouchmove={cancelLongPress}
+          class="icon-btn"
+        ><Database size={16} /></button>
+        <button
+          onclick={searchRemote}
+          ontouchstart={() => startLongPress(getRemoteUrl)}
+          ontouchend={cancelLongPress}
+          ontouchmove={cancelLongPress}
+          class="icon-btn"
+        ><Globe size={16} /></button>
+
+
+        <span class="divider">|</span>
+
+        <button onclick={scrollToBottom} class="icon-btn"><ChevronsDown size={16} /></button>
       </div>
     </div>
 
@@ -129,4 +277,100 @@
   </main>
 </div>
 
+{#if showNukeModal}
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+    role="dialog"
+    aria-modal="true"
+    tabindex="-1"
+    use:focusOnMount
+    onclick={(e) => { if (e.target === e.currentTarget) showNukeModal = false; }}
+    onkeydown={(e) => { if (e.key === 'Escape') showNukeModal = false; }}
+  >
+    <div class="flex w-full max-w-sm flex-col items-center gap-8 rounded-lg bg-[#1c1f2e] p-8 text-white">
+      <h2 class="text-center text-base font-bold">Are you sure you want to nuke {manga.media_id}?</h2>
+
+      <div class="flex flex-col items-center gap-2">
+        {#if manga.coverUrl}
+          <img src={manga.coverUrl} alt="Cover" class="max-h-64 rounded object-contain" />
+        {/if}
+        <p class="text-center text-sm font-normal text-zinc-400">{manga.title}</p>
+      </div>
+
+      <div class="flex gap-4">
+        <button onclick={confirmNuke} class="nuke-btn">Confirm</button>
+        <button onclick={() => (showNukeModal = false)} class="nuke-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+{/if}
+
 <ScrollToTop />
+
+<style>
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: #273446;
+    color: #ccc;
+    transition: background-color 0.15s;
+    line-height: 1.5;
+  }
+
+  .tag-pill:hover {
+    background-color: #2a5080;
+  }
+
+  .tag-pill.active {
+    background-color: #1e3a5a;
+    color: #fff;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #273446;
+    color: #ccc;
+    transition: background-color 0.15s;
+    text-decoration: none;
+  }
+
+  .icon-btn:hover {
+    background-color: #2a5080;
+    color: #fff;
+  }
+
+  .nuke-btn {
+    padding: 8px 24px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #273446;
+    color: #ccc;
+    transition: background-color 0.15s;
+  }
+
+  .nuke-btn:hover {
+    background-color: #2a5080;
+    color: #fff;
+  }
+
+  .divider {
+    color: #3f4558;
+    padding: 0 2px;
+    user-select: none;
+  }
+</style>
