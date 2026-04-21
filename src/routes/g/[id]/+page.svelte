@@ -25,7 +25,8 @@
     })
 
     function capitalize(s: string) {
-        return s.charAt(0).toUpperCase() + s.slice(1) + 's'
+        const word = s.charAt(0).toUpperCase() + s.slice(1)
+        return word.endsWith('y') ? word.slice(0, -1) + 'ies' : word + 's'
     }
 
 </script>
@@ -59,9 +60,9 @@
 
                 <div class="mt-4 space-y-2 text-sm">
                     {#each tagGroups as [type, tags]}
-                        <div class="flex gap-2 flex-wrap items-baseline">
-                            <span class="text-zinc-400 shrink-0 w-24">{capitalize(type)}:</span>
-                            <div class="flex gap-1.5 flex-wrap">
+                        <div class="flex gap-2 items-start">
+                            <span class="text-zinc-400 shrink-0 w-24 pt-0.5">{capitalize(type)}:</span>
+                            <div class="flex gap-1.5 flex-wrap flex-1">
                                 {#each tags as tag (tag.id)}
                                     <span class="bg-zinc-700 text-zinc-200 px-2 py-0.5 rounded text-xs">{tag.slug}</span>
                                 {/each}
@@ -69,8 +70,8 @@
                         </div>
                     {/each}
 
-                    <div class="flex gap-2 items-baseline">
-                        <span class="text-zinc-400 shrink-0 w-24">Pages:</span>
+                    <div class="flex gap-2 items-start">
+                        <span class="text-zinc-400 shrink-0 w-24 pt-0.5">Pages:</span>
                         <span class="text-zinc-200">{manga.pages}</span>
                     </div>
                 </div>
@@ -87,13 +88,19 @@
         </div>
 
         <div class="mt-4">
-            {#each manga.page_list as page (page.id)}
-                <img
-                    src={page.imageUrl}
-                    alt="Page {page.number}"
-                    class="w-full block"
-                    loading="lazy"
-                />
+            {#each manga.page_list as page, i (page.id)}
+                <div class="relative">
+                    <img
+                        src={page.imageUrl}
+                        alt="Page {page.number}"
+                        class="w-full block"
+                        loading="lazy"
+                    />
+                    <span
+                        class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm font-bold select-none pointer-events-none tracking-widest"
+                        style="color: black; -webkit-text-stroke: 3px rgba(255,255,255,0.5); paint-order: stroke fill; opacity: 0.5;"
+                    >{i + 1} / {manga.page_list.length}</span>
+                </div>
             {/each}
         </div>
     </main>

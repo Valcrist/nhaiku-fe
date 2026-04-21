@@ -17,4 +17,4 @@
 
 <svelte:head><title>Remote Gallery - NHaiku</title></svelte:head>
 
-<GalleryView items={data.items} currPage={data.currPage} numPages={data.numPages} onPageChange={goToPage} logoHref="/page/1" />
+<GalleryView items={data.items} currPage={data.currPage} numPages={data.numPages} onPageChange={goToPage} logoHref="/page/1" subtitle=" - Remote Gallery" />
