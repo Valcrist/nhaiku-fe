@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto, afterNavigate } from '$app/navigation';
+  import { page as currentPage } from '$app/state';
   import GalleryView from '$lib/components/GalleryView.svelte';
   import type { PageData } from './$types';
 
@@ -11,7 +12,8 @@
 
   function goToPage(page: number) {
     if (page === data.currPage) return;
-    goto(`/r/page/${page}`);
+    const search = currentPage.url.search;
+    goto(`/r/page/${page}${search}`);
   }
 </script>
 
