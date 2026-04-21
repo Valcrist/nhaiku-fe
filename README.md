@@ -36,14 +36,14 @@ NHaiku FE is the frontend for [NHaiku](https://github.com/Valcrist/nhaiku). It p
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | SvelteKit 2 + Svelte 5 |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 4 |
-| Build | Vite 6 |
-| Adapter | Auto (universal deployment) |
-| Package manager | pnpm |
+| Layer           | Technology                  |
+| --------------- | --------------------------- |
+| Framework       | SvelteKit 2 + Svelte 5      |
+| Language        | TypeScript 5                |
+| Styling         | Tailwind CSS 4              |
+| Build           | Vite 6                      |
+| Adapter         | Auto (universal deployment) |
+| Package manager | pnpm                        |
 
 ---
 
@@ -52,7 +52,6 @@ NHaiku FE is the frontend for [NHaiku](https://github.com/Valcrist/nhaiku). It p
 - [Node.js](https://nodejs.org/) 18+
 - [pnpm](https://pnpm.io/) (`npm install -g pnpm`)
 - A running [NHaiku backend](https://github.com/Valcrist/nhaiku) instance
-
 
 ---
 
@@ -68,9 +67,8 @@ pnpm install
 
 ## Environment Variables
 
-
-| Variable | Description |
-|---|---|
+| Variable  | Description                                           |
+| --------- | ----------------------------------------------------- |
 | `API_URL` | NHaiku backend URL (e.g. `http://192.168.1.100:8069`) |
 
 ---

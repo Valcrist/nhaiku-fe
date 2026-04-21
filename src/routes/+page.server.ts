@@ -1,3 +1,3 @@
-import { redirect } from '@sveltejs/kit'
+import { redirect } from '@sveltejs/kit';
 
-export const load = () => redirect(301, '/page/1')
+export const load = () => redirect(301, '/page/1');
