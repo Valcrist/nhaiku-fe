@@ -71,7 +71,7 @@
               </div>
             {/if}
           </div>
-          <p class="mt-1 line-clamp-2 text-[13px] leading-snug text-zinc-300">
+          <p class="mt-1 line-clamp-5 text-[13px] leading-snug text-zinc-300">
             [{item.num_pages}] {item.english_title}
           </p>
         </a>
