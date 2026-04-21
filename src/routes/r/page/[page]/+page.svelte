@@ -22,6 +22,7 @@
   currPage={data.currPage}
   numPages={data.numPages}
   onPageChange={goToPage}
+  galleryId="remote"
   logoHref="/page/1"
   subtitle=" - Remote Gallery"
 />

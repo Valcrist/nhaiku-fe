@@ -10,6 +10,7 @@
     onPageChange,
     logoHref = '/',
     subtitle = '',
+    galleryId = 'local',
   }: {
     items: GalleryItem[];
     currPage: number;
@@ -17,6 +18,7 @@
     onPageChange: (page: number) => void;
     logoHref?: string;
     subtitle?: string;
+    galleryId?: 'local' | 'remote';
   } = $props();
 
   let loadingId = $state<number | null>(null);
@@ -28,11 +30,11 @@
 </script>
 
 <div class="min-h-screen text-white">
-  <header class="px-4 py-3 border-b border-zinc-800">
+  <header class="border-b border-zinc-800 px-4 py-3">
     <a
       href={logoHref}
-      class="text-lg font-bold tracking-wide text-white hover:text-zinc-300 transition-colors"
-      >🌸 NHaiku{#if subtitle}<span class="text-zinc-400 font-normal">{subtitle}</span
+      class="text-lg font-bold tracking-wide text-white transition-colors hover:text-zinc-300"
+      >🌸 NHaiku{#if subtitle}<span class="font-normal text-zinc-400">{subtitle}</span
         >{/if}</a
     >
   </header>
@@ -41,12 +43,12 @@
     <Pagination {currPage} {numPages} {onPageChange} />
 
     <div
-      class="grid gap-2 justify-center mt-6"
+      class="mt-6 grid justify-center gap-2"
       style="grid-template-columns: repeat(auto-fill, 150px)"
     >
       {#each items as item (item.id)}
         <a
-          href="/g/{item.id}"
+          href="/g/{item.id}?from={galleryId}"
           class="group block"
           onclick={(e) => handleCardClick(e, item.id)}
         >
@@ -56,7 +58,7 @@
               alt={item.english_title}
               width="150"
               height="225"
-              class="w-full aspect-[2/3] object-cover transition-all duration-200 group-hover:brightness-110"
+              class="aspect-[2/3] w-full object-cover transition-all duration-200 group-hover:brightness-110"
               loading="lazy"
             />
             {#if loadingId === item.id}
@@ -64,12 +66,12 @@
                 class="absolute inset-0 flex items-center justify-center bg-black/50"
               >
                 <div
-                  class="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"
+                  class="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-white"
                 ></div>
               </div>
             {/if}
           </div>
-          <p class="mt-1 text-[13px] text-zinc-300 line-clamp-2 leading-snug">
+          <p class="mt-1 line-clamp-2 text-[13px] leading-snug text-zinc-300">
             [{item.num_pages}] {item.english_title}
           </p>
         </a>

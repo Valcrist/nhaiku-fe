@@ -22,6 +22,7 @@
   currPage={data.currPage}
   numPages={data.numPages}
   onPageChange={goToPage}
+  galleryId="local"
   logoHref="/r/page/1"
   subtitle=" - Local Gallery"
 />

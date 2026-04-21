@@ -11,9 +11,9 @@ export const load: PageServerLoad = async ({ params }) => {
     remoteSearchManga(API_URL, API_KEY, page),
   ]);
 
-  const items = gallery.result.map((item, i) => ({
+  const items = gallery.result.map((item) => ({
     ...item,
-    thumbUrl: `${servers[i % servers.length]}/${item.thumbnail}`,
+    thumbUrl: `${servers[((item.id * 2654435761) >>> 0) % servers.length]}/${item.thumbnail}`,
   }));
 
   return {
