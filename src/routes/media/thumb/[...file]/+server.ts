@@ -3,12 +3,13 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
   const url = `${API_URL}/thumb/${params.file}`;
+  // console.log('[thumb proxy]', url);
   const res = await fetch(url);
   if (!res.ok) return new Response(null, { status: res.status });
   const headers: Record<string, string> = {
     'content-type': res.headers.get('content-type') ?? 'image/webp',
-  }
-  const cc = res.headers.get('cache-control')
-  if (cc) headers['cache-control'] = cc
+  };
+  const cc = res.headers.get('cache-control');
+  if (cc) headers['cache-control'] = cc;
   return new Response(res.body, { headers });
 };
