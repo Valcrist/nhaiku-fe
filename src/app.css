@@ -3,7 +3,7 @@
 html {
   font-size: 17px;
   background: linear-gradient(to bottom, #05101f, #071629);
-  background-attachment: fixed;
+  min-height: 100%;
 }
 
 body {

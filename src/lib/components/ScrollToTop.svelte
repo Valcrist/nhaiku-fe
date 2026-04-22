@@ -1,5 +1,10 @@
 <script lang="ts">
+  import { ChevronsUp } from 'lucide-svelte';
+
+  let { opacity = 80 }: { opacity?: number } = $props();
+
   let show = $state(false);
+  let hovered = $state(false);
 
   function handleScroll() {
     show = window.scrollY > 300;
@@ -11,20 +16,12 @@
 {#if show}
   <button
     onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-    class="fixed right-6 bottom-6 grid h-[30px] w-[30px] cursor-pointer place-items-center rounded-full border-[3px] border-[#2a5080] bg-transparent text-[#2a5080] opacity-50 shadow-lg transition-all hover:border-[#133B6E] hover:text-[#133B6E] hover:opacity-80"
+    class="fixed right-6 bottom-6 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-[6px] border-none bg-[#273446] text-[#ccc] shadow-lg transition-[colors,opacity] hover:bg-[#2a5080] hover:text-white"
+    style="opacity: {hovered ? 1 : opacity / 100}"
+    onmouseenter={() => (hovered = true)}
+    onmouseleave={() => (hovered = false)}
     aria-label="Scroll to top"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-3 w-3"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M12 19V5M5 12l7-7 7 7" />
-    </svg>
+    <ChevronsUp size={16} />
   </button>
 {/if}

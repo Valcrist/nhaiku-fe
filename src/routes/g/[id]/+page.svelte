@@ -192,6 +192,7 @@
   </header>
 
   <main class="mx-auto max-w-5xl px-4 py-6">
+    <!-- info panel -->
     <div class="rounded-lg bg-[#1c1f2e] p-6">
       {#if titleEditing}
         <div class="flex items-center gap-2">
@@ -280,6 +281,7 @@
         </div>
       </div>
 
+      <!-- button panel -->
       <div class="mt-4 flex items-center justify-end gap-2">
         <button onclick={() => (showNukeModal = true)} class="icon-btn"
           ><Trash2 size={16} /></button
@@ -386,7 +388,7 @@
   </div>
 {/if}
 
-<ScrollToTop />
+<ScrollToTop opacity={30} />
 
 <style>
   .tag-pill {
