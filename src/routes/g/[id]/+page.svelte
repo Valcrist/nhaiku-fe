@@ -153,6 +153,18 @@
     }
   }
 
+  function scrollBy(distance: number, duration = 200) {
+    const start = window.scrollY
+    const startTime = performance.now()
+    function step(now: number) {
+      const t = Math.min((now - startTime) / duration, 1)
+      const eased = 1 - Math.pow(1 - t, 3)
+      window.scrollTo(0, start + distance * eased)
+      if (t < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }
+
   function scrollToBottom() {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
@@ -344,13 +356,13 @@
           <button
             type="button"
             class="block w-full cursor-pointer border-none bg-transparent p-0"
-            onclick={() =>
-              window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
+            onclick={() => scrollBy(window.innerHeight * 0.8)}
           >
             <img
               src={page.imageUrl}
               alt="Page {page.number}"
-              class="block w-full"
+              class="block w-full pointer-events-none select-none"
+              draggable="false"
               loading="lazy"
             />
           </button>
