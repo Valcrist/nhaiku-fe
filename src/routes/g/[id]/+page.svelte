@@ -331,12 +331,19 @@
     <div class="mt-4">
       {#each manga.page_list as page, i (page.id)}
         <div class="relative">
-          <img
-            src={page.imageUrl}
-            alt="Page {page.number}"
-            class="block w-full"
-            loading="lazy"
-          />
+          <button
+            type="button"
+            class="block w-full cursor-pointer border-none bg-transparent p-0"
+            onclick={() =>
+              window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
+          >
+            <img
+              src={page.imageUrl}
+              alt="Page {page.number}"
+              class="block w-full"
+              loading="lazy"
+            />
+          </button>
           <span
             class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-sm font-bold tracking-widest select-none"
             style="color: black; -webkit-text-stroke: 3px rgba(255,255,255,0.5); paint-order: stroke fill; opacity: 0.5;"
