@@ -51,7 +51,9 @@
   let titleEditing = $state(false);
   let titleQuery = $state('');
   let localSort = $state<'title' | 'date' | 'pages' | 'votes' | null>(null);
-  let remoteSort = $state<'date' | 'popular' | 'popular-today' | 'popular-week' | 'popular-month' | null>(null);
+  let remoteSort = $state<
+    'date' | 'popular' | 'popular-today' | 'popular-week' | 'popular-month' | null
+  >(null);
 
   function toggleTag(tag: Tag) {
     const key = `${tag.type}:"${tag.slug}"`;
@@ -119,14 +121,20 @@
   }
 
   function searchLocal(e: MouseEvent) {
-    if (suppressNextClick) { suppressNextClick = false; return; }
+    if (suppressNextClick) {
+      suppressNextClick = false;
+      return;
+    }
     const url = getLocalUrl();
     if (e.ctrlKey || e.metaKey) window.open(url, '_blank');
     else goto(url);
   }
 
   function searchRemote(e: MouseEvent) {
-    if (suppressNextClick) { suppressNextClick = false; return; }
+    if (suppressNextClick) {
+      suppressNextClick = false;
+      return;
+    }
     const url = getRemoteUrl();
     if (e.ctrlKey || e.metaKey) window.open(url, '_blank');
     else goto(url);
@@ -159,7 +167,13 @@
   }
 
   const LOCAL_SORTS = ['title', 'date', 'pages', 'votes'] as const;
-  const REMOTE_SORTS = ['date', 'popular', 'popular-today', 'popular-week', 'popular-month'] as const;
+  const REMOTE_SORTS = [
+    'date',
+    'popular',
+    'popular-today',
+    'popular-week',
+    'popular-month',
+  ] as const;
 </script>
 
 <svelte:head><title>{manga.title} - NHaiku</title></svelte:head>
@@ -182,19 +196,28 @@
       {#if titleEditing}
         <div class="flex items-center gap-2">
           <input
-            class="text-xl leading-snug font-semibold text-white bg-transparent border-b border-zinc-500 outline-none flex-1 min-w-0"
+            class="min-w-0 flex-1 border-b border-zinc-500 bg-transparent text-xl leading-snug font-semibold text-white outline-none"
             bind:value={titleQuery}
-            onkeydown={(e) => { if (e.key === 'Enter') commitTitleEdit(); else if (e.key === 'Escape') cancelTitleEdit() }}
+            onkeydown={(e) => {
+              if (e.key === 'Enter') commitTitleEdit();
+              else if (e.key === 'Escape') cancelTitleEdit();
+            }}
             use:focusOnMount
           />
-          <button class="icon-btn shrink-0 ml-2" onclick={() => (titleQuery = manga.title)} title="Reset"><RotateCcw size={14} /></button>
-          <button class="icon-btn shrink-0" onclick={cancelTitleEdit} title="Cancel"><X size={14} /></button>
+          <button
+            class="icon-btn ml-2 shrink-0"
+            onclick={() => (titleQuery = manga.title)}
+            title="Reset"><RotateCcw size={14} /></button
+          >
+          <button class="icon-btn shrink-0" onclick={cancelTitleEdit} title="Cancel"
+            ><X size={14} /></button
+          >
         </div>
       {:else}
         <button
-          class="text-xl leading-snug font-semibold text-white cursor-pointer hover:text-zinc-300 text-left w-full bg-transparent border-none p-0"
-          onclick={startTitleEdit}
-        >{manga.title}</button>
+          class="w-full cursor-pointer border-none bg-transparent p-0 text-left text-xl leading-snug font-semibold text-white hover:text-zinc-300"
+          onclick={startTitleEdit}>{manga.title}</button
+        >
       {/if}
       {#if manga.title_jp}
         <p class="mt-1 text-sm text-zinc-500">{manga.title_jp}</p>
@@ -209,8 +232,8 @@
                 <button
                   onclick={() => toggleTag(tag)}
                   class="tag-pill"
-                  class:active={isTagSelected(tag)}
-                >{tag.slug}</button>
+                  class:active={isTagSelected(tag)}>{tag.slug}</button
+                >
               {/each}
             </div>
           </div>
@@ -237,8 +260,8 @@
               <button
                 onclick={() => (localSort = localSort === s ? null : s)}
                 class="tag-pill"
-                class:active={localSort === s}
-              >{s}</button>
+                class:active={localSort === s}>{s}</button
+              >
             {/each}
           </div>
         </div>
@@ -250,20 +273,26 @@
               <button
                 onclick={() => (remoteSort = remoteSort === s ? null : s)}
                 class="tag-pill"
-                class:active={remoteSort === s}
-              >{s}</button>
+                class:active={remoteSort === s}>{s}</button
+              >
             {/each}
           </div>
         </div>
       </div>
 
       <div class="mt-4 flex items-center justify-end gap-2">
-        <button onclick={() => (showNukeModal = true)} class="icon-btn"><Trash2 size={16} /></button>
+        <button onclick={() => (showNukeModal = true)} class="icon-btn"
+          ><Trash2 size={16} /></button
+        >
 
         <span class="divider">|</span>
 
-        <button onclick={() => vote('up')} class="icon-btn"><ThumbsUp size={16} /></button>
-        <button onclick={() => vote('down')} class="icon-btn"><ThumbsDown size={16} /></button>
+        <button onclick={() => vote('up')} class="icon-btn"
+          ><ThumbsUp size={16} /></button
+        >
+        <button onclick={() => vote('down')} class="icon-btn"
+          ><ThumbsDown size={16} /></button
+        >
 
         <span class="divider">|</span>
 
@@ -271,26 +300,29 @@
 
         <span class="divider">|</span>
 
-        <button onclick={() => (selectedTags = new Set())} class="icon-btn"><FilterX size={16} /></button>
+        <button onclick={() => (selectedTags = new Set())} class="icon-btn"
+          ><FilterX size={16} /></button
+        >
         <button
           onclick={searchLocal}
           ontouchstart={() => startLongPress(getLocalUrl)}
           ontouchend={cancelLongPress}
           ontouchmove={cancelLongPress}
-          class="icon-btn"
-        ><Database size={16} /></button>
+          class="icon-btn"><Database size={16} /></button
+        >
         <button
           onclick={searchRemote}
           ontouchstart={() => startLongPress(getRemoteUrl)}
           ontouchend={cancelLongPress}
           ontouchmove={cancelLongPress}
-          class="icon-btn"
-        ><Globe size={16} /></button>
-
+          class="icon-btn"><Globe size={16} /></button
+        >
 
         <span class="divider">|</span>
 
-        <button onclick={scrollToBottom} class="icon-btn"><ChevronsDown size={16} /></button>
+        <button onclick={scrollToBottom} class="icon-btn"
+          ><ChevronsDown size={16} /></button
+        >
       </div>
     </div>
 
@@ -321,15 +353,27 @@
     aria-modal="true"
     tabindex="-1"
     use:focusOnMount
-    onclick={(e) => { if (e.target === e.currentTarget) showNukeModal = false; }}
-    onkeydown={(e) => { if (e.key === 'Escape') showNukeModal = false; }}
+    onclick={(e) => {
+      if (e.target === e.currentTarget) showNukeModal = false;
+    }}
+    onkeydown={(e) => {
+      if (e.key === 'Escape') showNukeModal = false;
+    }}
   >
-    <div class="flex w-full max-w-sm flex-col items-center gap-8 rounded-lg bg-[#1c1f2e] p-8 text-white">
-      <h2 class="text-center text-base font-bold">Are you sure you want to nuke {manga.media_id}?</h2>
+    <div
+      class="flex w-full max-w-sm flex-col items-center gap-8 rounded-lg bg-[#1c1f2e] p-8 text-white"
+    >
+      <h2 class="text-center text-base font-bold">
+        Are you sure you want to nuke {manga.media_id}?
+      </h2>
 
       <div class="flex flex-col items-center gap-2">
         {#if manga.coverUrl}
-          <img src={manga.coverUrl} alt="Cover" class="max-h-64 rounded object-contain" />
+          <img
+            src={manga.coverUrl}
+            alt="Cover"
+            class="max-h-64 rounded object-contain"
+          />
         {/if}
         <p class="text-center text-sm font-normal text-zinc-400">{manga.title}</p>
       </div>

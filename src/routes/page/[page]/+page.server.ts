@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 
   const items = gallery.result.map((item) => ({
     ...item,
-    thumbUrl: `${API_URL}/thumb/${item.thumbnail}`,
+    thumbUrl: `/media/thumb/${item.thumbnail}`,
   }));
 
   return {

@@ -12,11 +12,11 @@ export const load: PageServerLoad = async ({ params }) => {
   return {
     manga: {
       ...manga,
-      coverUrl: manga.cover_file ? `${API_URL}/cover/${manga.cover_file}` : null,
+      coverUrl: manga.cover_file ? `/media/cover/${manga.cover_file}` : null,
       page_list: manga.page_list
         .filter((p) => p.page_file)
         .sort((a, b) => a.number - b.number)
-        .map((p) => ({ ...p, imageUrl: `${API_URL}/image/${p.page_file}` })),
+        .map((p) => ({ ...p, imageUrl: `/media/image/${p.page_file}` })),
     },
   };
 };
