@@ -190,9 +190,9 @@
   const relatedSections = $derived<
     Array<{ label: string; items: typeof manga.same_artist }>
   >([
+    { label: 'Similar Titles', items: manga.similar_titles },
     { label: 'Same Artist', items: manga.same_artist },
     { label: 'Same Group', items: manga.same_group },
-    { label: 'Similar Titles', items: manga.similar_titles },
   ]);
 
   const LOCAL_SORTS = ['title', 'date', 'pages', 'votes'] as const;
@@ -223,7 +223,7 @@
 
   <main class="mx-auto max-w-5xl px-4 py-6">
     <!-- info panel -->
-    <div class="rounded-lg bg-[#1c1f2e] p-6">
+    <div class="rounded-lg bg-[#141926] p-6">
       {#if titleEditing}
         <div class="flex items-center gap-2">
           <input
@@ -384,9 +384,14 @@
     </div>
 
     <!-- related sections -->
+    {#if manga.similar_titles.length > 0}
+      <div class="mt-4 rounded-lg bg-[#1a2235] px-6 py-3">
+        <p class="text-center text-base font-semibold tracking-wide text-zinc-400">{manga.title}</p>
+      </div>
+    {/if}
     {#each relatedSections as { label, items } (label)}
       {#if items.length > 0}
-        <div class="mt-4 rounded-lg bg-[#1c1f2e] p-6">
+        <div class="mt-4 rounded-lg bg-[#1a2235] p-6">
           <h2 class="mb-4 text-sm font-semibold tracking-wide text-zinc-400">
             {label}
           </h2>
@@ -437,7 +442,7 @@
     }}
   >
     <div
-      class="flex w-full max-w-sm flex-col items-center gap-8 rounded-lg bg-[#1c1f2e] p-8 text-white"
+      class="flex w-full max-w-sm flex-col items-center gap-8 rounded-lg bg-[#141926] p-8 text-white"
     >
       <h2 class="text-center text-base font-bold">
         Are you sure you want to nuke {manga.media_id}?
@@ -471,7 +476,7 @@
       onclick={() => (showVotePanel = !showVotePanel)}
       onmouseenter={() => (heartHovered = true)}
       onmouseleave={() => (heartHovered = false)}
-      class="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[6px] border-none bg-[#273446] text-[#ccc] shadow-lg transition-colors hover:bg-[#2a5080] hover:text-white"
+      class="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[6px] border-none bg-[#1e2a38] text-[#ccc] shadow-lg transition-colors hover:bg-[#2a5080] hover:text-white"
       style="opacity: {showVotePanel || heartHovered ? 1 : 0.3}"
       aria-label="Toggle vote panel"
     >
@@ -498,7 +503,7 @@
     border-radius: 4px;
     border: none;
     cursor: pointer;
-    background-color: #273446;
+    background-color: #1e2a38;
     color: #ccc;
     transition: background-color 0.15s;
     line-height: 1.5;
@@ -522,7 +527,7 @@
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    background-color: #273446;
+    background-color: #1e2a38;
     color: #ccc;
     transition: background-color 0.15s;
     text-decoration: none;
@@ -540,7 +545,7 @@
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    background-color: #273446;
+    background-color: #1e2a38;
     color: #ccc;
     transition: background-color 0.15s;
   }
@@ -562,7 +567,7 @@
     gap: 4px;
     align-self: stretch;
     padding: 0;
-    background-color: #1c1f2e;
+    background-color: #1a2235;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     overflow: hidden;
