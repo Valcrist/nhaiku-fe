@@ -375,7 +375,7 @@
             />
           </button>
           <span
-            class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-sm font-bold tracking-widest select-none"
+            class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] tracking-widest select-none"
             style="color: black; -webkit-text-stroke: 3px rgba(255,255,255,0.5); paint-order: stroke fill; opacity: 0.5;"
             >{i + 1} / {manga.page_list.length}</span
           >
@@ -386,7 +386,9 @@
     <!-- related sections -->
     {#if manga.similar_titles.length > 0}
       <div class="mt-4 rounded-lg bg-[#1a2235] px-6 py-3">
-        <p class="text-center text-base font-semibold tracking-wide text-zinc-400">{manga.title}</p>
+        <p class="text-center text-base font-semibold tracking-wide text-zinc-400">
+          {manga.title}
+        </p>
       </div>
     {/if}
     {#each relatedSections as { label, items } (label)}
