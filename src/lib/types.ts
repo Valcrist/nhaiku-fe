@@ -10,6 +10,14 @@ export interface PageItem {
   page_file: string | null;
 }
 
+export interface MangaListItem {
+  id: number;
+  title: string;
+  thumbnail: string | null;
+  pages: number;
+  thumbUrl: string;
+}
+
 export interface MangaDetail {
   id: number;
   media_id: string;
@@ -21,6 +29,9 @@ export interface MangaDetail {
   cover_file: string | null;
   tags: Tag[];
   page_list: PageItem[];
+  same_artist: MangaListItem[];
+  same_group: MangaListItem[];
+  similar_titles: MangaListItem[];
 }
 
 export interface GalleryItem {

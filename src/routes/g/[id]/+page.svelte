@@ -154,15 +154,15 @@
   }
 
   function scrollBy(distance: number, duration = 200) {
-    const start = window.scrollY
-    const startTime = performance.now()
+    const start = window.scrollY;
+    const startTime = performance.now();
     function step(now: number) {
-      const t = Math.min((now - startTime) / duration, 1)
-      const eased = 1 - Math.pow(1 - t, 3)
-      window.scrollTo(0, start + distance * eased)
-      if (t < 1) requestAnimationFrame(step)
+      const t = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      window.scrollTo(0, start + distance * eased);
+      if (t < 1) requestAnimationFrame(step);
     }
-    requestAnimationFrame(step)
+    requestAnimationFrame(step);
   }
 
   function scrollToBottom() {
@@ -186,6 +186,14 @@
   function focusOnMount(node: HTMLElement) {
     node.focus();
   }
+
+  const relatedSections = $derived<
+    Array<{ label: string; items: typeof manga.same_artist }>
+  >([
+    { label: 'Same Artist', items: manga.same_artist },
+    { label: 'Same Group', items: manga.same_group },
+    { label: 'Similar Titles', items: manga.similar_titles },
+  ]);
 
   const LOCAL_SORTS = ['title', 'date', 'pages', 'votes'] as const;
   const REMOTE_SORTS = [
@@ -361,7 +369,7 @@
             <img
               src={page.imageUrl}
               alt="Page {page.number}"
-              class="block w-full pointer-events-none select-none"
+              class="pointer-events-none block w-full select-none"
               draggable="false"
               loading="lazy"
             />
@@ -374,6 +382,43 @@
         </div>
       {/each}
     </div>
+
+    <!-- related sections -->
+    {#each relatedSections as { label, items } (label)}
+      {#if items.length > 0}
+        <div class="mt-4 rounded-lg bg-[#1c1f2e] p-6">
+          <h2 class="mb-4 text-sm font-semibold tracking-wide text-zinc-400">
+            {label}
+          </h2>
+          <div
+            class="grid justify-start gap-2"
+            style="grid-template-columns: repeat(auto-fill, 150px)"
+          >
+            {#each items as item (item.id)}
+              <a href="/g/{item.id}" class="group block">
+                <div class="relative overflow-hidden rounded">
+                  {#if item.thumbUrl}
+                    <img
+                      src={item.thumbUrl}
+                      alt={item.title}
+                      width="150"
+                      height="225"
+                      class="aspect-[2/3] w-full object-cover transition-all duration-200 group-hover:brightness-110"
+                      loading="lazy"
+                    />
+                  {:else}
+                    <div class="aspect-[2/3] w-full bg-zinc-800"></div>
+                  {/if}
+                </div>
+                <p class="mt-1 line-clamp-5 text-[13px] leading-snug text-zinc-300">
+                  [{item.pages}] {item.title}
+                </p>
+              </a>
+            {/each}
+          </div>
+        </div>
+      {/if}
+    {/each}
   </main>
 </div>
 
