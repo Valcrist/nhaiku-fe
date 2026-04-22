@@ -9,6 +9,7 @@
     Database,
     FilterX,
     Globe,
+    Heart,
     RefreshCw,
     RotateCcw,
     ThumbsDown,
@@ -47,6 +48,9 @@
 
   let currentVotes = $state(untrack(() => data.manga.votes));
   let showNukeModal = $state(false);
+  let showVotePanel = $state(false);
+  let heartHovered = $state(false);
+  let showHeart = $state(false);
   let selectedTags = $state(new Set<string>());
   let titleEditing = $state(false);
   let titleQuery = $state('');
@@ -153,6 +157,11 @@
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
+  function handleScroll() {
+    showHeart = window.scrollY > 300;
+    showVotePanel = false;
+  }
+
   const backHref = $derived(
     page.url.searchParams.get('from') === 'remote' ? '/r/page/1' : '/page/1'
   );
@@ -177,6 +186,7 @@
 </script>
 
 <svelte:head><title>{manga.title} - NHaiku</title></svelte:head>
+<svelte:window onscroll={handleScroll} />
 
 <div class="min-h-screen text-white">
   <header class="border-b border-zinc-800 px-4 py-3">
@@ -397,6 +407,31 @@
 
 <ScrollToTop opacity={30} />
 
+{#if showHeart}
+  <!-- vote panel -->
+  <div class="fixed top-6 left-6 flex items-center gap-2">
+    <button
+      onclick={() => (showVotePanel = !showVotePanel)}
+      onmouseenter={() => (heartHovered = true)}
+      onmouseleave={() => (heartHovered = false)}
+      class="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[6px] border-none bg-[#273446] text-[#ccc] shadow-lg transition-colors hover:bg-[#2a5080] hover:text-white"
+      style="opacity: {showVotePanel || heartHovered ? 1 : 0.3}"
+      aria-label="Toggle vote panel"
+    >
+      <Heart size={16} />
+    </button>
+
+    <div class="vote-panel" class:visible={showVotePanel}>
+      <button onclick={() => vote('up')} class="vote-btn"><ThumbsUp size={14} /></button
+      >
+      <span class="vote-panel-count">{currentVotes}</span>
+      <button onclick={() => vote('down')} class="vote-btn"
+        ><ThumbsDown size={14} /></button
+      >
+    </div>
+  </div>
+{/if}
+
 <style>
   .tag-pill {
     display: inline-flex;
@@ -461,6 +496,60 @@
   .divider {
     color: #3f4558;
     padding: 0 2px;
+    user-select: none;
+  }
+
+  .vote-panel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch;
+    padding: 0;
+    background-color: #1c1f2e;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    max-width: 0;
+    opacity: 0;
+    transition:
+      max-width 0.25s ease,
+      opacity 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .vote-panel.visible {
+    max-width: 150px;
+    opacity: 1;
+  }
+
+  .vote-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: #ccc;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .vote-btn:hover {
+    background-color: #2a5080;
+    color: #fff;
+  }
+
+  .vote-panel-count {
+    font-size: 0.8rem;
+    color: #ccc;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
     user-select: none;
   }
 </style>
