@@ -15,6 +15,7 @@
     ThumbsDown,
     ThumbsUp,
     Trash2,
+    Eraser,
     X,
   } from 'lucide-svelte';
   import type { PageData } from './$types';
@@ -71,7 +72,7 @@
   }
 
   function startTitleEdit() {
-    titleQuery = manga.title;
+    if (!titleQuery) titleQuery = manga.title;
     titleEditing = true;
   }
 
@@ -237,6 +238,11 @@
           />
           <button
             class="icon-btn ml-2 shrink-0"
+            onclick={() => (titleQuery = '')}
+            title="Clear"><Eraser size={14} /></button
+          >
+          <button
+            class="icon-btn shrink-0"
             onclick={() => (titleQuery = manga.title)}
             title="Reset"><RotateCcw size={14} /></button
           >
