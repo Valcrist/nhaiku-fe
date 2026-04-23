@@ -192,6 +192,7 @@
     Array<{ label: string; items: typeof manga.same_artist }>
   >([
     { label: 'Similar Titles', items: manga.similar_titles },
+    { label: 'Related Titles', items: manga.related_titles },
     { label: 'Same Artist', items: manga.same_artist },
     { label: 'Same Group', items: manga.same_group },
   ]);

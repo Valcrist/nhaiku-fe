@@ -30,6 +30,7 @@ export interface MangaDetail {
   tags: Tag[];
   page_list: PageItem[];
   same_artist: MangaListItem[];
+  related_titles: MangaListItem[];
   same_group: MangaListItem[];
   similar_titles: MangaListItem[];
 }

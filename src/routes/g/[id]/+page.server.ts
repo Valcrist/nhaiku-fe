@@ -10,7 +10,10 @@ export const load: PageServerLoad = async ({ params }) => {
   const manga = await getManga(API_URL, API_KEY, id);
 
   function mapListItem(item: (typeof manga.same_artist)[number]) {
-    return { ...item, thumbUrl: item.thumbnail ? `/media/thumb/${item.thumbnail}` : '' }
+    return {
+      ...item,
+      thumbUrl: item.thumbnail ? `/media/thumb/${item.thumbnail}` : '',
+    };
   }
 
   return {
@@ -22,6 +25,7 @@ export const load: PageServerLoad = async ({ params }) => {
         .sort((a, b) => a.number - b.number)
         .map((p) => ({ ...p, imageUrl: `/media/image/${p.page_file}` })),
       same_artist: manga.same_artist.map(mapListItem),
+      related_titles: manga.related_titles.map(mapListItem),
       same_group: manga.same_group.map(mapListItem),
       similar_titles: manga.similar_titles.map(mapListItem),
     },
