@@ -191,8 +191,8 @@
   const relatedSections = $derived<
     Array<{ label: string; items: typeof manga.same_artist }>
   >([
-    { label: 'Similar Titles', items: manga.similar_titles },
     { label: 'Related Titles', items: manga.related_titles },
+    { label: 'Similar Titles', items: manga.similar_titles },
     { label: 'Same Artist', items: manga.same_artist },
     { label: 'Same Group', items: manga.same_group },
   ]);
@@ -391,13 +391,11 @@
     </div>
 
     <!-- related sections -->
-    {#if manga.similar_titles.length > 0}
-      <div class="mt-4 rounded-lg bg-[#1a2235] px-6 py-3">
-        <p class="text-center text-base font-semibold tracking-wide text-zinc-400">
-          {manga.title}
-        </p>
-      </div>
-    {/if}
+    <div class="mt-4 rounded-lg bg-[#1a2235] px-6 py-3">
+      <p class="text-center text-base font-semibold tracking-wide text-zinc-400">
+        [{manga.pages}] {manga.title}
+      </p>
+    </div>
     {#each relatedSections as { label, items } (label)}
       {#if items.length > 0}
         <div class="mt-4 rounded-lg bg-[#1a2235] p-6">
@@ -425,7 +423,7 @@
                   {/if}
                 </div>
                 <p class="mt-1 line-clamp-5 text-[13px] leading-snug text-zinc-300">
-                  [{item.pages}] {item.title}
+                  [{item.pages}] [{item.id}] {item.title}
                 </p>
               </a>
             {/each}
