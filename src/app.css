@@ -10,6 +10,7 @@ html {
   font-family: var(--font-sans);
   background: linear-gradient(to bottom, #05101f, #071629);
   min-height: 100%;
+  color-scheme: dark;
 }
 
 body {

@@ -139,8 +139,9 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Claude files
-.claude/
 CLAUDE.md
+.claude/
+zzz/
 
 # Environments
 .env
@@ -161,3 +162,4 @@ Icon\r
 *.token
 
 ref/
+build/
